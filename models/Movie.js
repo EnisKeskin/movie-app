@@ -1,5 +1,5 @@
-const mogoose = require('mongoose');
-const Schema = mogoose.Schema;
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
 const MovieShema = new Schema({
     director_id: Schema.Types.ObjectId,
