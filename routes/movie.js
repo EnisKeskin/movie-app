@@ -6,7 +6,19 @@ const router = express.Router();
 const Movie = require('../models/Movie');
 
 router.get('/', (req, res, next) => {
-    const promise = Movie.find({})
+    const promise = Movie.aggregate([
+        {
+            $lookup: {
+                from: 'directors',
+                localField: 'director_id',
+                foreignField: '_id',
+                as: 'director'
+            }
+        },
+        {
+            $unwind: '$director'
+        }
+    ])
     promise.then((data) => {
         res.json(data);
     }).catch((err) => {
@@ -57,14 +69,14 @@ router.put('/:movieId', (req, res, next) => {
 router.delete('/:movieId', (req, res, next) => {
     const promise = Movie.findByIdAndDelete(req.params.movieId);
     promise.then((data) => {
-        res.json({ status : 1 });
+        res.json({ status: 1 });
     }).catch((err) => {
         res.json(err);
     });
 })
 
 router.get('/between/:start_year/:end_year', (req, res, next) => {
-    const { start_year, end_year } = req.params 
+    const { start_year, end_year } = req.params
     const promise = Movie.find({
         year: { "$gte": parseInt(start_year), "$lte": parseInt(end_year) }
     });

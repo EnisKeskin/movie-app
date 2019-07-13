@@ -12,25 +12,28 @@ router.get('/', (req, res) => {
             localField: '_id',
             foreignField: 'director_id',
             as: 'movies'
-        }},
-        {$unwind: {
+        }
+    },
+    {
+        $unwind: {
             path: '$movies',
             preserveNullAndEmptyArrays: true,
-        }},
-        {
-            $group: {
-                _id: {
-                    _id: '$_id',
-                    name: '$name',
-                    surname: '$surname',
-                    bio: '$bio'
-                },
-                movies: {
-                    $push: '$movies'
-                }
+        }
+    },
+    {
+        $group: {
+            _id: {
+                _id: '$_id',
+                name: '$name',
+                surname: '$surname',
+                bio: '$bio'
+            },
+            movies: {
+                $push: '$movies'
             }
-        },
-  
+        }
+    },
+
     ]);
     promise.then((data) => {
         res.json(data);
@@ -47,16 +50,19 @@ router.get('/:director_id', (req, res) => {
             }
         },
         {
-        $lookup: {
-            from: 'movies',
-            localField: '_id',
-            foreignField: 'director_id',
-            as: 'movies'
-        }},
-        {$unwind: {
-            path: '$movies',
-            preserveNullAndEmptyArrays: true,
-        }},
+            $lookup: {
+                from: 'movies',
+                localField: '_id',
+                foreignField: 'director_id',
+                as: 'movies'
+            }
+        },
+        {
+            $unwind: {
+                path: '$movies',
+                preserveNullAndEmptyArrays: true,
+            }
+        },
         {
             $group: {
                 _id: {
@@ -70,7 +76,7 @@ router.get('/:director_id', (req, res) => {
                 }
             }
         },
-  
+
     ]);
     promise.then((data) => {
         res.json(data);
@@ -90,4 +96,28 @@ router.post('/', (req, res) => {
     });
 });
 
+router.put('/:director_id', (req, res) => {
+    const promise = Director.findOneAndUpdate(
+        req.params.director_id,
+        req.body, {
+            new: true
+        }
+    );
+
+    promise.then((data) => {
+        res.json({ data });
+    }).catch((err) => {
+        res.json(err);
+    });
+});
+
+router.delete('/:director_id', (req, res) => {
+    const promise = Director.findByIdAndDelete(req.params.director_id);
+
+    promise.then((data) => {
+        res.json({ data });
+    }).catch((err) => {
+        res.json(err);
+    });
+});
 module.exports = router;

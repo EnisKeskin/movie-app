@@ -5,7 +5,9 @@ const MovieShema = new Schema({
     director_id: Schema.Types.ObjectId,
     title: {
         type: String,
-        required: true,
+        required: [true, '`{PATH}` alanı zorunldur'],
+        maxlength: [50, '`{PATH}` alanı (`{VALUE}`), ({Maxlength}) büyük olmalıdır '],
+        minlength: 1,
     },
     category: String,
     country: String,
